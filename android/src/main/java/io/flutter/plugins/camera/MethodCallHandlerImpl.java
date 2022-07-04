@@ -363,9 +363,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             resolutionPreset,
             enableAudio);
 
-    Map<String, Object> reply = new HashMap<>();
-    reply.put("cameraId", flutterSurfaceTexture.id());
-    result.success(reply);
 	camera.open(result);
   }
 
