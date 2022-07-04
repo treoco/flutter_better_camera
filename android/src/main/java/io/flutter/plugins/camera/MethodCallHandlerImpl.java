@@ -59,46 +59,29 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           handleException(e, result);
         }
         break;
-      case "create":
-        {
-          if (camera != null) {
-            camera.close();
-          }
-
-          cameraPermissions.requestPermissions(
-              activity,
-              permissionsRegistry,
-              call.argument("enableAudio"),
-              (String errCode, String errDesc) -> {
-                if (errCode == null) {
-                  try {
-                    instantiateCamera(call, result);
-                  } catch (Exception e) {
-                    handleException(e, result);
-                  }
-                } else {
-                  result.error(errCode, errDesc, null);
-                }
-              });
-          break;
-        }
-      case "initialize":
-        {
-          if (camera != null) {
-            try {
-              camera.open(call.argument("imageFormatGroup"));
-              result.success(null);
-            } catch (Exception e) {
-              handleException(e, result);
+     case "initialize":
+          {
+            if (camera != null) {
+              camera.close();
             }
-          } else {
-            result.error(
-                "cameraNotFound",
-                "Camera not found. Please call the 'create' method before calling 'initialize'.",
-                null);
+            cameraPermissions.requestPermissions(
+                activity,
+                permissionsRegistry,
+                call.argument("enableAudio"),
+                (String errCode, String errDesc) -> {
+                  if (errCode == null) {
+                    try {
+                      instantiateCamera(call, result);
+                    } catch (Exception e) {
+                      handleException(e, result);
+                    }
+                  } else {
+                    result.error(errCode, errDesc, null);
+                  }
+                });
+
+            break;
           }
-          break;
-        }
       case "takePicture":
         {
           camera.takePicture(result);
