@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.types;
+package io.flutter.plugins.camera.features.autofocus;
 
-// Mirrors exposure_mode.dart
-public enum ExposureMode {
+// Mirrors focus_mode.dart
+public enum FocusMode {
   auto("auto"),
   locked("locked");
 
   private final String strValue;
 
-  ExposureMode(String strValue) {
+  FocusMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static ExposureMode getValueForString(String modeStr) {
-    for (ExposureMode value : values()) {
-      if (value.strValue.equals(modeStr)) return value;
+  public static FocusMode getValueForString(String modeStr) {
+    for (FocusMode value : values()) {
+      if (value.strValue.equals(modeStr)) {
+        return value;
+      }
     }
     return null;
   }
