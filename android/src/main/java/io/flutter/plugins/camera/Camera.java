@@ -675,7 +675,7 @@ public class Camera {
         try {
           backgroundHandlerThread.join();
         } catch (InterruptedException e) {
-          dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
+          dartMessenger.sendCameraErrorEvent(e.getMessage());
         }
       }
       backgroundHandlerThread = null;
@@ -1275,4 +1275,38 @@ public class Camera {
     flutterTexture.release();
     deviceOrientationListener.stop();
   }
+  
+  /** Factory class that assists in creating a {@link HandlerThread} instance. */
+    static class HandlerThreadFactory {
+      /**
+       * Creates a new instance of the {@link HandlerThread} class.
+       *
+       * <p>This method is visible for testing purposes only and should never be used outside this *
+       * class.
+       *
+       * @param name to give to the HandlerThread.
+       * @return new instance of the {@link HandlerThread} class.
+       */
+      @VisibleForTesting
+      public static HandlerThread create(String name) {
+        return new HandlerThread(name);
+      }
+    }
+
+    /** Factory class that assists in creating a {@link Handler} instance. */
+    static class HandlerFactory {
+      /**
+       * Creates a new instance of the {@link Handler} class.
+       *
+       * <p>This method is visible for testing purposes only and should never be used outside this *
+       * class.
+       *
+       * @param looper to give to the Handler.
+       * @return new instance of the {@link Handler} class.
+       */
+      @VisibleForTesting
+      public static Handler create(Looper looper) {
+        return new Handler(looper);
+      }
+    }
 }
