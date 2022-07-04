@@ -194,20 +194,14 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open(String imageFormatGroup) throws CameraAccessException {
+  public void open(@NonNull final Result result) throws CameraAccessException {
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
-    Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
-    if (imageFormat == null) {
-      Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
-      imageFormat = ImageFormat.YUV_420_888;
-    }
-
     // Used to steam image byte data to dart side.
     imageStreamReader =
-        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
+        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
 
     cameraManager.openCamera(
         cameraName,
