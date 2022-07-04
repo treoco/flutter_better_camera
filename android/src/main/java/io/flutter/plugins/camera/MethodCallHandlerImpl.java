@@ -366,6 +366,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     Map<String, Object> reply = new HashMap<>();
     reply.put("cameraId", flutterSurfaceTexture.id());
     result.success(reply);
+	camera.open(result);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash
