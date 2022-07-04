@@ -35,6 +35,7 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.util.Range;
@@ -137,6 +138,9 @@ public class Camera {
     supportedImageFormats.put("yuv420", 35);
     supportedImageFormats.put("jpeg", 256);
   }
+  
+  
+  private MethodChannel.Result flutterResult;
   
   /** A CameraDeviceWrapper implementation that forwards calls to a CameraDevice. */
     private class DefaultCameraDeviceWrapper implements CameraDeviceWrapper {
@@ -796,7 +800,7 @@ public class Camera {
     // Get the flash availability
     Boolean flashAvailable =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
 
     // Check if flash is available.
@@ -941,7 +945,7 @@ public class Camera {
   private boolean supportsDistortionCorrection() throws CameraAccessException {
     int[] availableDistortionCorrectionModes =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
     if (availableDistortionCorrectionModes == null) availableDistortionCorrectionModes = new int[0];
     long nonOffModesSupported =
@@ -955,7 +959,7 @@ public class Camera {
     // No distortion correction support
     if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.P || !supportsDistortionCorrection()) {
       return cameraManager
-          .getCameraCharacteristics(cameraDevice.getId())
+          .getCameraCharacteristics(cameraName)
           .get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
     }
     // Get the current distortion correction mode
@@ -967,12 +971,12 @@ public class Camera {
         || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
       rect =
           cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
+              .getCameraCharacteristics(cameraName)
               .get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
     } else {
       rect =
           cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
+              .getCameraCharacteristics(cameraName)
               .get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
     }
     return rect == null ? null : new Size(rect.width(), rect.height());
@@ -981,7 +985,7 @@ public class Camera {
   private boolean isExposurePointSupported() throws CameraAccessException {
     Integer supportedRegions =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
     return supportedRegions != null && supportedRegions > 0;
   }
@@ -989,7 +993,7 @@ public class Camera {
   private boolean isFocusPointSupported() throws CameraAccessException {
     Integer supportedRegions =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
     return supportedRegions != null && supportedRegions > 0;
   }
@@ -997,7 +1001,7 @@ public class Camera {
   public double getMinExposureOffset() throws CameraAccessException {
     Range<Integer> range =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
     double minStepped = range == null ? 0 : range.getLower();
     double stepSize = getExposureOffsetStepSize();
@@ -1007,7 +1011,7 @@ public class Camera {
   public double getMaxExposureOffset() throws CameraAccessException {
     Range<Integer> range =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
     double maxStepped = range == null ? 0 : range.getUpper();
     double stepSize = getExposureOffsetStepSize();
@@ -1017,7 +1021,7 @@ public class Camera {
   public double getExposureOffsetStepSize() throws CameraAccessException {
     Rational stepSize =
         cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
+            .getCameraCharacteristics(cameraName)
             .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
     return stepSize == null ? 0.0 : stepSize.doubleValue();
   }
