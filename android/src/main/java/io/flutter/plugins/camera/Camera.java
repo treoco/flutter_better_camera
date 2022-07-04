@@ -1287,7 +1287,6 @@ public class Camera {
        * @param name to give to the HandlerThread.
        * @return new instance of the {@link HandlerThread} class.
        */
-      @VisibleForTesting
       public static HandlerThread create(String name) {
         return new HandlerThread(name);
       }
@@ -1304,7 +1303,6 @@ public class Camera {
        * @param looper to give to the Handler.
        * @return new instance of the {@link Handler} class.
        */
-      @VisibleForTesting
       public static Handler create(Looper looper) {
         return new Handler(looper);
       }
