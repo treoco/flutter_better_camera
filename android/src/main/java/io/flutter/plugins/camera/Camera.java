@@ -222,6 +222,11 @@ public class Camera {
               dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
             }
+            Map<String, Object> reply = new HashMap<>();
+            reply.put("textureId", flutterTexture.id());
+            reply.put("previewWidth", previewSize.getWidth());
+            reply.put("previewHeight", previewSize.getHeight());
+            result.success(reply);
           }
 
           @Override
